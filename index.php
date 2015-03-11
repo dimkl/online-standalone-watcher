@@ -1,14 +1,19 @@
 <?php
-require_once dirname(__FILE__).DIRECTORY_SEPARATOR.'userseries.php';
+require dirname(__FILE__).DIRECTORY_SEPARATOR.'models'.DIRECTORY_SEPARATOR.'series.php';
+require dirname(__FILE__).DIRECTORY_SEPARATOR.'adapters'.DIRECTORY_SEPARATOR.'jsonadapter.php';
+require dirname(__FILE__).DIRECTORY_SEPARATOR.'adapters'.DIRECTORY_SEPARATOR.'rssadapter.php';
 
-$adapter = new JsonAdapter('./userdata.json');
+$usersDataFile='./data/users.json';
+$rssCacheFile='./cache/rss.xml';
+
+$adapter = new JsonAdapter($usersDataFile);
 $adapterRss = new RssAdapter();
 
 $adapter->fetch();
 $adapter->specializeData("dimitris")->specializeData("series");
 
 if(!$adapterRss->isCacheExpired()){
-	$adapterRss = new RssAdapter('./cacheRss.xml');
+	$adapterRss = new RssAdapter($rssCacheFile);
 	$adapterRss->fetch();
 }else{
 	for ($i = 1; $i < 10; $i++) {
@@ -18,13 +23,12 @@ if(!$adapterRss->isCacheExpired()){
 }
 $adapterRss->save();
 
-$seriesObj = new UserSeries($adapterRss, $adapter);
+$seriesObj = new Series($adapterRss, $adapter);
 // mapping 
 if (isset($_GET["task"]) && method_exists($seriesObj, $_GET["task"])) {
     $seriesObj->{$_GET["task"]}();
 }
 $changes = $seriesObj->check();
-
 ?>
 <head>
 <base href="/online-watcher/">

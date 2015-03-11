@@ -1,6 +1,7 @@
 <?php
-require_once dirname(__FILE__).DIRECTORY_SEPARATOR.'adapters.php'; 
-class UserSeries
+require_once dirname(__FILE__).DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'adapters'.DIRECTORY_SEPARATOR.'iadapter.php'; 
+
+class Series
 {
     public $adapterUser;
     public $adapterSeries;
@@ -13,33 +14,37 @@ class UserSeries
     public function check() {
         $changes = array();
         $seriesNodes=$this->adapterSeries->getData();
-        
+        $updated=false;
+
         foreach ($seriesNodes as $seriesNode) {
             if (!preg_match('/(.*)s([0-9]{2})e([0-9]{2})/i', $seriesNode->title, $matches)) continue;
             if (count($matches) != 4) continue;
-            //remove full match from array
+            // remove full match from array
             array_shift($matches);
             list($series, $season, $episode) = $matches;
-            //trim data
+            // trim data
             $series=trim(strtr($series,array('.'=>' ','-'=>' ')));
-            //series is not being watched
+            // series is not being watched
             $userSeries=&$this->adapterUser->getData($series);
             if (empty($userSeries)) continue;
-            
-            //updated latest episodes
+            $updated=true;
+            // update latest episodes
             $latest = &$userSeries->latest;
             $latest->season = $season;
             $latest->episode = $episode;
-            //
-            $this->adapterUser->save();
-            //check for watched episode
-            $watched = &$userSeries->watched;
+            // update episode list
+            $episodes = &$userSeries->episodes;
+            $key="S{$season}E{$episode}";
+            if(!isset($episodes->$key))
+                $episodes->$key=(string)$seriesNode->link;
+            // check for watched episode
+            $watched = &$userSeries->last_watched;
             // find diffs of season and episode
             $seasonDiff = intval($season) - intval($watched->season);
             $episodeDiff = intval($episode) - intval($watched->episode);
-            //check if episode is not new
+            // check if episode is not new
             if ($seasonDiff < 0 || ($seasonDiff == 0 && $episodeDiff <= 0)) continue;
-            //check for multiple rss rows for the same series
+            // check for multiple rss rows for the same series
             if(isset( $changes[$series]) && !in_array((string)$seriesNode->link, $changes[$series]["links"])){
                 $changes[$series]["links"][]=(string)$seriesNode->link;
             } else{
@@ -50,6 +55,10 @@ class UserSeries
                  "links" => [(string)$seriesNode->link]);
             }
         }
+        // save
+        if($updated)
+            $this->adapterUser->save();
+        
         return $changes;
     }
     
