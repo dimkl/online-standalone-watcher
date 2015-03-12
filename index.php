@@ -1,7 +1,9 @@
 <?php
-require dirname(__FILE__).DIRECTORY_SEPARATOR.'models'.DIRECTORY_SEPARATOR.'series.php';
-require dirname(__FILE__).DIRECTORY_SEPARATOR.'adapters'.DIRECTORY_SEPARATOR.'jsonadapter.php';
-require dirname(__FILE__).DIRECTORY_SEPARATOR.'adapters'.DIRECTORY_SEPARATOR.'rssadapter.php';
+define("BASEPATH",dirname(__FILE__).DIRECTORY_SEPARATOR);
+
+require BASEPATH.'controllers'.DIRECTORY_SEPARATOR.'seriescontroller.php';
+require BASEPATH.'adapters'.DIRECTORY_SEPARATOR.'jsonadapter.php';
+require BASEPATH.'adapters'.DIRECTORY_SEPARATOR.'rssadapter.php';
 
 $usersDataFile='./data/users.json';
 $rssCacheFile='./cache/rss.xml';
@@ -20,46 +22,14 @@ if(!$adapterRss->isCacheExpired()){
 		$adapterRss->source='http://kickass.to/tv/?rss='. $i;
     	$adapterRss->fetch(true);
 	}
+	$adapterRss->save();
 }
-$adapterRss->save();
-
-$seriesObj = new Series($adapterRss, $adapter);
+$seriesObj = new SeriesController($adapterRss, $adapter);
 // mapping 
 if (isset($_GET["task"]) && method_exists($seriesObj, $_GET["task"])) {
     $seriesObj->{$_GET["task"]}();
 }
 $changes = $seriesObj->check();
+
+require BASEPATH.'templates'.DIRECTORY_SEPARATOR.'changed-template.php'; 
 ?>
-<head>
-<base href="/online-watcher/">
-</head>
-<body>
-<?php
-foreach ($changes as $changed): ?>
-<div class="unwatched-series">
-	<div>
-	<span>Σειρά</span>
-	<span><?php
-    echo $changed["series"] ?></span>
-	</div>
-	<div>
-	<span>Σεζόν</span>
-	<span><?php
-    echo $changed["season"] ?></span>
-	</div>
-	<div>
-	<span>Επεισόδιο</span>
-	<span><?php
-    echo $changed["episode"] ?></span>
-	</div>
-	<a href="index.php?task=watch&series=<?php
-    echo $changed["series"] ?>&season=<?php
-    echo $changed["season"] ?>&episode=<?php
-    echo $changed["episode"] ?>"> Watched </a>
-	<?php foreach($changed["links"] as $index=>$link):?>
-    <a href="<?php echo $link?>"> Torrent link-<?php echo $index?></a>
-	<?php endforeach; ?>
-</div>
-<?php
-endforeach; ?>
-</body>

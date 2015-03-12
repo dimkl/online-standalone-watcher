@@ -31,6 +31,16 @@
                     "season": "02",
                     "episode": "12"
                 }
+            },
+            "The 100": {
+                "watched": {
+                    "season": "02",
+                    "episode": "11"
+                },
+                "latest": {
+                    "season": "02",
+                    "episode": "12"
+                }
             }
         }
     }
