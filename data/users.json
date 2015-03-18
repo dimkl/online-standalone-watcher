@@ -3,43 +3,52 @@
         "movies": {},
         "series": {
             "Vikings": {
-                "watched": {
+                "last_watched": {
                     "season": "03",
-                    "episode": "01"
+                    "episode": "04"
                 },
                 "latest": {
-                    "season": "03",
-                    "episode": "03"
+                    "season": "3",
+                    "episode": "04"
+                },
+                "episodes": {
+                    "S3E04": "magnet:?xt=urn:btih:E424995503C193456EBCA7F4FBD499EEA5E79835&dn=Vikings+S03E04+720p+HDTV+x264+KILLERS&tr=udp:\/\/tracker.coppersurfer.tk:6969\/announce&tr=udp:\/\/tracker.leechers-paradise.org:6969&tr=udp:\/\/open.demonii.com:1337"
                 }
             },
             "The Walking Dead": {
-                "watched": {
+                "last_watched": {
                     "season": "05",
                     "episode": "04"
                 },
                 "latest": {
                     "season": "05",
                     "episode": "13"
+                },
+                "episodes": {
                 }
             },
             "Marvel Agents of S H I E L D": {
-                "watched": {
+                "last_watched": {
                     "season": "02",
                     "episode": "11"
                 },
                 "latest": {
                     "season": "02",
                     "episode": "12"
+                },
+                "episodes": {
                 }
             },
             "The 100": {
-                "watched": {
+                "last_watched": {
                     "season": "02",
                     "episode": "11"
                 },
                 "latest": {
                     "season": "02",
                     "episode": "12"
+                },
+                "episodes": {
                 }
             }
         }
